@@ -1,0 +1,88 @@
+cybersec-toolkit/
+├── main.py
+├── config/
+│ ├── init.py
+│ └── settings.py
+├── core/
+│ ├── init.py
+│ ├── base_module.py
+│ └── logger.py
+├── modules/
+│ ├── init.py
+│ ├── recon/
+│ │ ├── init.py
+│ │ ├── subdomain_enum.py
+│ │ ├── port_scanner.py
+│ │ ├── network_mapper.py
+│ │ ├── whois_lookup.py
+│ │ ├── dns_enum.py
+│ │ ├── tech_detector.py
+│ │ └── osint.py
+│ ├── vuln_scanner/
+│ │ ├── init.py
+│ │ ├── web_vuln_scanner.py
+│ │ ├── sqli_scanner.py
+│ │ ├── xss_scanner.py
+│ │ ├── ssl_checker.py
+│ │ ├── header_analyzer.py
+│ │ └── cve_lookup.py
+│ ├── exploitation/
+│ │ ├── init.py
+│ │ ├── exploit_framework.py
+│ │ └── payload_generator.py
+│ ├── network/
+│ │ ├── init.py
+│ │ ├── packet_sniffer.py
+│ │ ├── arp_scanner.py
+│ │ ├── wifi_analyzer.py
+│ │ └── bandwidth_monitor.py
+│ ├── mobile/
+│ │ ├── init.py
+│ │ ├── apk_analyzer.py
+│ │ ├── apk_decompiler.py
+│ │ ├── mobile_vuln_scanner.py
+│ │ └── ssl_pinning_checker.py
+│ ├── malware_analysis/
+│ │ ├── init.py
+│ │ ├── static_analyzer.py
+│ │ ├── dynamic_analyzer.py
+│ │ ├── yara_scanner.py
+│ │ ├── pe_analyzer.py
+│ │ └── sandbox.py
+│ ├── reverse_engineering/
+│ │ ├── init.py
+│ │ ├── disassembler.py
+│ │ ├── string_extractor.py
+│ │ ├── binary_analyzer.py
+│ │ └── deobfuscator.py
+│ ├── forensics/
+│ │ ├── init.py
+│ │ ├── disk_forensics.py
+│ │ ├── memory_forensics.py
+│ │ ├── file_carver.py
+│ │ ├── metadata_extractor.py
+│ │ ├── log_analyzer.py
+│ │ └── hash_analyzer.py
+│ ├── defensive/
+│ │ ├── init.py
+│ │ ├── ids_ips.py
+│ │ ├── firewall_auditor.py
+│ │ ├── log_monitor.py
+│ │ ├── integrity_checker.py
+│ │ └── threat_intel.py
+│ ├── password/
+│ │ ├── init.py
+│ │ ├── hash_cracker.py
+│ │ ├── password_generator.py
+│ │ └── hash_identifier.py
+│ └── reporting/
+│ ├── init.py
+│ ├── report_generator.py
+│ └── templates/
+│ ├── html_report.html
+│ └── pdf_template.py
+├── wordlists/
+│ └── common.txt
+├── output/
+├── requirements.txt
+└── README.md
