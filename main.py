@@ -102,157 +102,210 @@ def display_main_menu():
     console.print(table)
 
 
+MODULE_CONFIG = {
+    1: {
+        "path": "modules.recon.port_scanner",
+        "class": "PortScanner",
+        "prompt": {
+            "target": "Enter target (IP/hostname)",
+            "port_range": "Port range",
+            "scan_type": "Scan type (tcp/syn)"
+        },
+        "args": ["port_range", "scan_type"]
+    },
+    2: {
+        "path": "modules.recon.subdomain_enum",
+        "class": "SubdomainEnumerator",
+        "prompt": {
+            "target": "Enter domain"
+        },
+        "args": ["wordlist"]
+    },
+    3: {
+        "path": "modules.recon.dns_enum",
+        "class": "DNSEnumerator",
+        "prompt": {
+            "target": "Enter domain"
+        }
+    },
+    4: {
+        "path": "modules.recon.whois_lookup",
+        "class": "WhoisLookup",
+        "prompt": {
+            "target": "Enter domain"
+        }
+    },
+    5: {
+        "path": "modules.vuln_scanner.web_vuln_scanner",
+        "class": "WebVulnScanner",
+        "prompt": {
+            "target": "Enter URL"
+        }
+    },
+    6: {
+        "path": "modules.vuln_scanner.sqli_scanner",
+        "class": "SQLiScanner",
+        "prompt": {
+            "target": "Enter URL with parameters",
+            "params": "Parameters to test (comma-separated)"
+        },
+        "args": ["params"],
+        "defaults": {"params": "id", "target": "http://example.com/page?id=1"}
+    },
+    7: {
+        "path": "modules.vuln_scanner.xss_scanner",
+        "class": "XSSScanner",
+        "prompt": {
+            "target": "Enter URL with parameters",
+            "params": "Parameters to test (comma-separated)"
+        },
+        "args": ["params"],
+        "defaults": {"params": "q"}
+    },
+    8: {
+        "path": "modules.network.packet_sniffer",
+        "class": "PacketSniffer",
+        "prompt": {
+            "interface": "Network interface (leave empty for default)",
+            "count": "Number of packets",
+            "filter": "BPF filter (optional)"
+        },
+        "args": ["interface", "count", "filter"],
+        "defaults": {"interface": "", "count": 50, "filter": ""},
+        "special": True
+    },
+    9: {
+        "path": "modules.network.packet_sniffer",
+        "class": "ARPScanner",
+        "prompt": {
+            "target": "Enter network range"
+        },
+        "defaults": {"target": "192.168.1.0/24"}
+    },
+    10: {
+        "path": "modules.mobile.apk_analyzer",
+        "class": "APKAnalyzer",
+        "prompt": {
+            "target": "Enter APK file path"
+        }
+    },
+    11: {
+        "path": "modules.malware_analysis.static_analyzer",
+        "class": "StaticMalwareAnalyzer",
+        "prompt": {
+            "target": "Enter file path"
+        }
+    },
+    12: {
+        "path": "modules.forensics.metadata_extractor",
+        "class": "MetadataExtractor",
+        "prompt": {
+            "target": "Enter file path"
+        }
+    },
+    13: {
+        "path": "modules.forensics.log_analyzer",
+        "class": "LogAnalyzer",
+        "prompt": {
+            "target": "Enter log file path"
+        }
+    },
+    14: {
+        "path": "modules.password.hash_cracker",
+        "class": "HashCracker",
+        "prompt": {
+            "target": "Enter hash to crack",
+            "hash_type": "Hash type",
+            "attack": "Attack type",
+            "wordlist": "Wordlist path"
+        },
+        "args": ["hash_type", "attack", "wordlist"],
+        "defaults": {"hash_type": "md5", "attack": "dictionary", "wordlist": "wordlists/common.txt"}
+    },
+    15: {
+        "path": "modules.password.hash_cracker",
+        "class": "HashIdentifier",
+        "prompt": {
+            "target": "Enter hash"
+        }
+    },
+    16: {
+        "path": "modules.defensive.integrity_checker",
+        "class": "IntegrityChecker",
+        "prompt": {
+            "target": "Enter directory path",
+            "action": "Action"
+        },
+        "args": ["action"],
+        "defaults": {"action": "check"}
+    },
+    17: {
+        "path": "modules.reporting.report_generator",
+        "class": "ReportGenerator",
+        "prompt": {
+            "target": "Target name for report",
+            "format": "Format"
+        },
+        "args": ["format", "results_file"],
+        "defaults": {"format": "html"}
+    }
+}
+
+
+def _execute_module(choice: int) -> dict:
+    """Execute module using registry configuration."""
+    if choice not in MODULE_CONFIG:
+        return {"error": "Invalid module choice"}
+
+    config = MODULE_CONFIG[choice]
+
+    try:
+        module = __import__(config["path"], fromlist=[config["class"]])
+        scanner_class = getattr(module, config["class"])
+        scanner = scanner_class()
+    except (ImportError, AttributeError) as e:
+        raise ImportError(f"Missing dependency: {e}")
+
+    kwargs = {}
+    
+    if "special" in config and config["special"]:
+        if choice == 8:
+            interface = Prompt.ask("[cyan]" + config["prompt"]["interface"].replace("(", "") + "[/cyan]",
+                                 default=config.get("defaults", {}).get("interface", ""))
+            count = IntPrompt.ask("[cyan]" + config["prompt"]["count"].replace("(", "") + "[/cyan]",
+                                default=config.get("defaults", {}).get("count", 50))
+            bpf_filter = Prompt.ask("[cyan]" + config["prompt"]["filter"].replace("(", "") + "[/cyan]",
+                                  default=config.get("defaults", {}).get("filter", ""))
+            return scanner.execute("local",
+                                 interface=interface if interface else None,
+                                 count=count,
+                                 filter=bpf_filter if bpf_filter else "")
+
+    for key, prompt_text in config["prompt"].items():
+        if key == "target":
+            target = Prompt.ask(f"[cyan]{prompt_text}[/cyan]")
+            kwargs["target"] = target
+        elif key == "params":
+            default_val = config.get("defaults", {}).get(key, "")
+            params_str = Prompt.ask(f"[cyan]{prompt_text}[/cyan]", default=default_val)
+            kwargs[key] = params_str.split(',')
+        else:
+            default_val = config.get("defaults", {}).get(key, "")
+            value = Prompt.ask(f"[cyan]{prompt_text}[/cyan]", default=str(default_val))
+            kwargs[key] = value
+
+    return scanner.execute(**kwargs)
+
+
 def run_module(choice: int):
     """Execute selected module."""
     results = {}
 
     try:
-        if choice == 1:
-            from modules.recon.port_scanner import PortScanner
-            target = Prompt.ask("[cyan]Enter target (IP/hostname)[/cyan]")
-            port_range = Prompt.ask("[cyan]Port range[/cyan]", default="1-1024")
-            scan_type = Prompt.ask("[cyan]Scan type (tcp/syn)[/cyan]", default="tcp")
-            scanner = PortScanner()
-            results = scanner.execute(target, port_range=port_range, scan_type=scan_type)
-
-        elif choice == 2:
-            from modules.recon.subdomain_enum import SubdomainEnumerator
-            target = Prompt.ask("[cyan]Enter domain[/cyan]")
-            wordlist = Prompt.ask("[cyan]Wordlist path (optional)[/cyan]", default="")
-            scanner = SubdomainEnumerator()
-            results = scanner.execute(target, wordlist=wordlist if wordlist else None)
-
-        elif choice == 3:
-            from modules.recon.dns_enum import DNSEnumerator
-            target = Prompt.ask("[cyan]Enter domain[/cyan]")
-            scanner = DNSEnumerator()
-            results = scanner.execute(target)
-
-        elif choice == 4:
-            from modules.recon.whois_lookup import WhoisLookup
-            target = Prompt.ask("[cyan]Enter domain[/cyan]")
-            scanner = WhoisLookup()
-            results = scanner.execute(target)
-
-        elif choice == 5:
-            from modules.vuln_scanner.web_vuln_scanner import WebVulnScanner
-            target = Prompt.ask("[cyan]Enter URL[/cyan]")
-            scanner = WebVulnScanner()
-            results = scanner.execute(target)
-
-        elif choice == 6:
-            from modules.vuln_scanner.sqli_scanner import SQLiScanner
-            target = Prompt.ask("[cyan]Enter URL with parameters[/cyan]",
-                              default="http://example.com/page?id=1")
-            params = Prompt.ask("[cyan]Parameters to test (comma-separated)[/cyan]",
-                              default="id")
-            scanner = SQLiScanner()
-            results = scanner.execute(target, params=params.split(','))
-
-        elif choice == 7:
-            from modules.vuln_scanner.xss_scanner import XSSScanner
-            target = Prompt.ask("[cyan]Enter URL with parameters[/cyan]")
-            params = Prompt.ask("[cyan]Parameters to test (comma-separated)[/cyan]",
-                              default="q")
-            scanner = XSSScanner()
-            results = scanner.execute(target, params=params.split(','))
-
-        elif choice == 8:
-            from modules.network.packet_sniffer import PacketSniffer
-            interface = Prompt.ask("[cyan]Network interface (leave empty for default)[/cyan]",
-                                 default="")
-            count = IntPrompt.ask("[cyan]Number of packets[/cyan]", default=50)
-            bpf_filter = Prompt.ask("[cyan]BPF filter (optional)[/cyan]", default="")
-            scanner = PacketSniffer()
-            results = scanner.execute("local",
-                                     interface=interface if interface else None,
-                                     count=count,
-                                     filter=bpf_filter if bpf_filter else "")
-
-        elif choice == 9:
-            from modules.network.packet_sniffer import ARPScanner
-            target = Prompt.ask("[cyan]Enter network range[/cyan]",
-                              default="192.168.1.0/24")
-            scanner = ARPScanner()
-            results = scanner.execute(target)
-
-        elif choice == 10:
-            from modules.mobile.apk_analyzer import APKAnalyzer
-            target = Prompt.ask("[cyan]Enter APK file path[/cyan]")
-            scanner = APKAnalyzer()
-            results = scanner.execute(target)
-
-        elif choice == 11:
-            from modules.malware_analysis.static_analyzer import StaticMalwareAnalyzer
-            target = Prompt.ask("[cyan]Enter file path[/cyan]")
-            scanner = StaticMalwareAnalyzer()
-            results = scanner.execute(target)
-
-        elif choice == 12:
-            from modules.forensics.metadata_extractor import MetadataExtractor
-            target = Prompt.ask("[cyan]Enter file path[/cyan]")
-            scanner = MetadataExtractor()
-            results = scanner.execute(target)
-
-        elif choice == 13:
-            from modules.forensics.log_analyzer import LogAnalyzer
-            target = Prompt.ask("[cyan]Enter log file path[/cyan]")
-            scanner = LogAnalyzer()
-            results = scanner.execute(target)
-
-        elif choice == 14:
-            from modules.password.hash_cracker import HashCracker
-            target = Prompt.ask("[cyan]Enter hash to crack[/cyan]")
-            hash_type = Prompt.ask("[cyan]Hash type[/cyan]",
-                                 choices=["md5", "sha1", "sha256", "sha512"],
-                                 default="md5")
-            attack = Prompt.ask("[cyan]Attack type[/cyan]",
-                              choices=["dictionary", "bruteforce"],
-                              default="dictionary")
-            wordlist = Prompt.ask("[cyan]Wordlist path[/cyan]",
-                                default="wordlists/common.txt")
-            scanner = HashCracker()
-            results = scanner.execute(target, hash_type=hash_type,
-                                     attack=attack, wordlist=wordlist)
-
-        elif choice == 15:
-            from modules.password.hash_cracker import HashIdentifier
-            target = Prompt.ask("[cyan]Enter hash[/cyan]")
-            scanner = HashIdentifier()
-            results = scanner.execute(target)
-
-        elif choice == 16:
-            from modules.defensive.integrity_checker import IntegrityChecker
-            target = Prompt.ask("[cyan]Enter directory path[/cyan]")
-            action = Prompt.ask("[cyan]Action[/cyan]",
-                              choices=["baseline", "check"],
-                              default="check")
-            scanner = IntegrityChecker()
-            results = scanner.execute(target, action=action)
-
-        elif choice == 17:
-            from modules.reporting.report_generator import ReportGenerator
-            target = Prompt.ask("[cyan]Target name for report[/cyan]")
-            report_format = Prompt.ask("[cyan]Format[/cyan]",
-                                     choices=["html", "pdf", "json"],
-                                     default="html")
-            results_file = Prompt.ask("[cyan]Results JSON file (optional)[/cyan]",
-                                    default="")
-            scan_results = {}
-            if results_file and os.path.exists(results_file):
-                with open(results_file, 'r') as f:
-                    scan_results = json.load(f)
-
-            generator = ReportGenerator()
-            results = generator.execute(target, results=scan_results,
-                                       format=report_format)
+        results = _execute_module(choice)
 
     except KeyboardInterrupt:
         console.print("\n[yellow]⚠️  Operation cancelled by user[/yellow]")
-        return
-    except ImportError as e:
-        console.print(f"[red]❌ Missing dependency: {e}[/red]")
-        console.print("[yellow]Install with: pip install -r requirements.txt[/yellow]")
         return
     except Exception as e:
         console.print(f"[red]❌ Error: {str(e)}[/red]")

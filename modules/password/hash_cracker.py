@@ -2,7 +2,7 @@ import hashlib
 import itertools
 import string
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from core.base_module import BaseModule
 

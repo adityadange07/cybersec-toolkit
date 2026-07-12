@@ -1,0 +1,3 @@
+2026-07-12 11:51:01,058 - Port Scanner - INFO - 🎯 Target: localhost (127.0.0.1)
+2026-07-12 11:51:01,065 - Port Scanner - INFO - 🔍 Scanning 1 ports on 127.0.0.1
+2026-07-12 11:51:02,077 - Port Scanner - INFO -   ✅ Port 80/HTTP - OPEN
