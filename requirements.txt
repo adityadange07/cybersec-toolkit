@@ -1,0 +1,52 @@
+# Core
+click>=8.0
+rich>=13.0
+colorama>=0.4.6
+pyfiglet>=0.8
+
+# Networking
+scapy>=2.5
+python-nmap>=0.7
+requests>=2.31
+dnspython>=2.4
+python-whois>=0.8
+aiohttp>=3.9
+urllib3>=2.0
+
+# Web Security
+beautifulsoup4>=4.12
+lxml>=4.9
+selenium>=4.15
+
+# Cryptography & Hashing
+cryptography>=41.0
+pycryptodome>=3.19
+
+# Malware Analysis
+yara-python>=4.3
+pefile>=2023.2
+pySSDeep>=1.0          # ✅ replaced ssdeep>=3.4
+python-magic>=0.4.27   # ✅ replaced magic>=0.4
+oletools>=0.60
+
+# Forensics
+pillow>=10.0
+exifread>=3.0
+
+# Mobile
+androguard>=3.3
+frida>=16.1
+
+# Reverse Engineering
+capstone>=5.0
+keystone-engine>=0.9
+r2pipe>=1.8
+
+# Reporting
+jinja2>=3.1
+fpdf2>=2.7
+matplotlib>=3.8
+
+# Defensive
+watchdog>=3.0
+psutil>=5.9
