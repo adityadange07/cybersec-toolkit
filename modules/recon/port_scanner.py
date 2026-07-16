@@ -1,5 +1,6 @@
 import socket
 import concurrent.futures
+from pathlib import Path
 from typing import Dict, Any, List, Tuple
 from core.base_module import BaseModule
 from config.settings import config
@@ -9,6 +10,13 @@ try:
     NMAP_AVAILABLE = True
 except ImportError:
     NMAP_AVAILABLE = False
+
+
+def create_module_file(file_path: str, file_content: str) -> None:
+    """Create a module file with proper directory structure."""
+    Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(file_path, 'w') as f:
+        f.write(file_content)
 
 
 class PortScanner(BaseModule):
@@ -147,49 +155,9 @@ class PortScanner(BaseModule):
             return self._tcp_connect_scan(ip, ports)
 
 
-class ServiceEnumerator(BaseModule):
-    """Enumerate services on discovered ports."""
-
-    def __init__(self):
-        super().__init__("Service Enumerator")
-
-    def grab_banner(self, target: str, port: int, timeout: float = 3.0) -> str:
-        """Grab service banner."""
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(timeout)
-            sock.connect((target, port))
-
-            # Send probe based on port
-            probes = {
-                80: b"HEAD / HTTP/1.1\r\nHost: target\r\n\r\n",
-                443: b"",
-                21: b"",
-                22: b"",
-                25: b"EHLO test\r\n",
-            }
-
-            probe = probes.get(port, b"\r\n")
-            if probe:
-                sock.send(probe)
-
-            banner = sock.recv(4096).decode('utf-8', errors='ignore')
-            sock.close()
-            return banner.strip()
-        except Exception as e:
-            return f"Error: {str(e)}"
-
-    def run(self, target: str, **kwargs) -> Dict[str, Any]:
-        """Enumerate services on open ports."""
-        ports = kwargs.get('ports', [22, 80, 443])
-        results = {}
-
-        for port in ports:
-            banner = self.grab_banner(target, port)
-            results[port] = {
-                'banner': banner,
-                'port': port
-            }
-            self.logger.info(f"Port {port}: {banner[:100]}")
-
-        return results
+def create_module_file(file_path: str, file_content: str) -> None:
+    """Create a module file with proper directory structure."""
+    from pathlib import Path
+    Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(file_path, 'w') as f:
+        f.write(file_content)
