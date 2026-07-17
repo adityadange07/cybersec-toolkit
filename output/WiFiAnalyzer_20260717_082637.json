@@ -1,0 +1,14 @@
+{
+  "interface": "localhost",
+  "networks": [],
+  "total_found": 0,
+  "open_networks": [],
+  "weak_security": [],
+  "default_ssids": [],
+  "summary": {
+    "total": 0,
+    "open": 0,
+    "weak": 0,
+    "secure": 0
+  }
+}

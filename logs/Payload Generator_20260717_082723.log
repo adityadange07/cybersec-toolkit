@@ -1,0 +1,4 @@
+2026-07-17 08:27:23,143 - Payload Generator - INFO - 🚀 Starting Payload Generator against localhost
+2026-07-17 08:27:23,150 - Payload Generator - INFO - 📅 Time: 2026-07-17 08:27:23
+2026-07-17 08:27:23,153 - Payload Generator - INFO - 📦 Generated 9 xss payloads
+2026-07-17 08:27:23,156 - Payload Generator - INFO - ✅ Payload Generator completed in 0.01 seconds

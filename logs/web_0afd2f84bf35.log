@@ -1,0 +1,8 @@
+2026-07-17 08:33:09,115 - PasswordGenerator - INFO - 🚀 Starting Password Generator against check
+2026-07-17 08:33:09,135 - PasswordGenerator - INFO - 📅 Time: 2026-07-17 08:33:09
+2026-07-17 08:33:09,139 - PasswordGenerator - INFO - 🔐 Password Generator — mode: check
+2026-07-17 08:33:09,145 - PasswordGenerator - INFO -   📊 Score: 20/100 | Weak
+2026-07-17 08:33:09,148 - PasswordGenerator - INFO -     💡 Add special characters
+2026-07-17 08:33:09,153 - PasswordGenerator - INFO -     💡 Avoid: Common password pattern
+2026-07-17 08:33:09,159 - PasswordGenerator - INFO -     💡 Avoid: Sequential numbers
+2026-07-17 08:33:09,165 - PasswordGenerator - INFO - ✅ Password Generator completed in 0.05 seconds

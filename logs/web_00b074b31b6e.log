@@ -1,0 +1,12 @@
+2026-07-17 08:36:17,201 - WhoisLookup - INFO - 🚀 Starting WHOIS Lookup against example.com
+2026-07-17 08:36:17,205 - WhoisLookup - INFO - 📅 Time: 2026-07-17 08:36:17
+2026-07-17 08:36:21,171 - WhoisLookup - INFO -   📋 domain: example.com
+2026-07-17 08:36:21,174 - WhoisLookup - INFO -   📋 registrar: RESERVED-Internet Assigned Numbers Authority
+2026-07-17 08:36:21,183 - WhoisLookup - INFO -   📋 creation_date: 1995-08-14 04:00:00+00:00
+2026-07-17 08:36:21,185 - WhoisLookup - INFO -   📋 expiration_date: 2026-08-13 04:00:00+00:00
+2026-07-17 08:36:21,197 - WhoisLookup - INFO -   📋 updated_date: 2026-01-16 18:26:50+00:00
+2026-07-17 08:36:21,204 - WhoisLookup - INFO -   📋 name_servers: ['ELLIOTT.NS.CLOUDFLARE.COM', 'HERA.NS.CLOUDFLARE.COM']
+2026-07-17 08:36:21,212 - WhoisLookup - INFO -   📋 status: ['clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited', 'clientTransferProhibited https://icann.org/epp#clientTransferProhibited', 'clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited']
+2026-07-17 08:36:21,218 - WhoisLookup - INFO -   📋 registrant: N/A
+2026-07-17 08:36:21,222 - WhoisLookup - INFO -   📋 dnssec: signedDelegation
+2026-07-17 08:36:21,224 - WhoisLookup - INFO - ✅ WHOIS Lookup completed in 4.02 seconds

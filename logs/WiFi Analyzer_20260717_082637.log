@@ -1,0 +1,5 @@
+2026-07-17 08:26:37,644 - WiFi Analyzer - INFO - 🚀 Starting WiFi Analyzer against localhost
+2026-07-17 08:26:37,646 - WiFi Analyzer - INFO - 📅 Time: 2026-07-17 08:26:37
+2026-07-17 08:26:37,649 - WiFi Analyzer - INFO - 📡 Scanning Wi-Fi networks on localhost
+2026-07-17 08:26:37,672 - WiFi Analyzer - WARNING - Scan error: Command '['iwlist', 'localhost', 'scanning']' returned non-zero exit status 255.
+2026-07-17 08:26:37,674 - WiFi Analyzer - INFO - ✅ WiFi Analyzer completed in 0.03 seconds
